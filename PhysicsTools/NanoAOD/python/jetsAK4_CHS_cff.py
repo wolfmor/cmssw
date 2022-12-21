@@ -381,7 +381,7 @@ def nanoAOD_refineFastSim_bTagDeepFlav(process):
 
         src = cms.InputTag("linkedObjects","jets"),
 
-        weightFile=cms.FileInPath("PhysicsTools/NanoAOD/data/btagDeepFlavRefineNN.onnx"),
+        weightFile=cms.FileInPath("PhysicsTools/NanoAOD/data/btagDeepFlavRefineNN_CHS.onnx"),
         name = cms.string("btagDeepFlavRefineNN"),
 
         isClassifier = cms.bool(False),
