@@ -44,7 +44,8 @@ public:
 private:
   void produce(edm::Event&, const edm::EventSetup&) override;
 
-  V0Fitter theVees;      
+  V0Fitter theVees;
+  int ievent;    
 };
 
 
@@ -54,6 +55,10 @@ V0Producer::V0Producer(const edm::ParameterSet& iConfig) :
 {
   produces< reco::VertexCompositeCandidateCollection >("Kshort");
   produces< reco::VertexCompositeCandidateCollection >("Lambda");
+  produces< std::vector<int> >("ProtonTrackIndices");
+  //produces< std::vector<int> >("SelectedTrackIndices");
+  produces< std::vector<float> >("DcaKshort");
+  produces< std::vector<float> >("DcaLambda");
   //produces< reco::VertexCompositeCandidateCollection >("LambdaBar");
 
 }
@@ -70,17 +75,32 @@ void V0Producer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
    // Create auto_ptr for each collection to be stored in the Event
    auto kShortCandidates = std::make_unique<reco::VertexCompositeCandidateCollection>();
+   auto dca_kShortCandidates = std::make_unique<std::vector<float>>();
 
    auto lambdaCandidates = std::make_unique<reco::VertexCompositeCandidateCollection>();
+   auto dca_lambdaCandidates = std::make_unique<std::vector<float>>();
 
-  // invoke the fitter which reconstructs the vertices and fills,
-   //  collections of Kshorts, Lambda0s
-   theVees.fitAll(iEvent, iSetup, *kShortCandidates, *lambdaCandidates);
+   auto protonTrackIndices = std::make_unique<std::vector<int>>();
+   
+   //auto selectedTrackIndices = std::make_unique<std::vector<int>>();
+   
+   ievent+=1;
+   if(ievent%100==0) {
+     std::cout << "processing event " << ievent << std::endl;
+   }
+   //
+   theVees.fitAll(iEvent, iSetup, *kShortCandidates, *dca_kShortCandidates, *lambdaCandidates, *dca_lambdaCandidates, *protonTrackIndices);
 
 
    // Write the collections to the Event
-   kShortCandidates->shrink_to_fit(); iEvent.put(std::move(kShortCandidates), std::string("Kshort") );
-   lambdaCandidates->shrink_to_fit(); iEvent.put(std::move(lambdaCandidates), std::string("Lambda") );
+   //kShortCandidates->shrink_to_fit(); 
+   iEvent.put(std::move(kShortCandidates), std::string("Kshort") );
+   iEvent.put(std::move(dca_kShortCandidates), std::string("DcaKshort") );
+   //lambdaCandidates->shrink_to_fit(); 
+   iEvent.put(std::move(lambdaCandidates), std::string("Lambda") );
+   iEvent.put(std::move(dca_lambdaCandidates), std::string("DcaLambda") );
+   iEvent.put(std::move(protonTrackIndices), std::string("ProtonTrackIndices") );
+   //iEvent.put(std::move(selectedTrackIndices), std::string("SelectedTrackIndices") );
 
 }
 
