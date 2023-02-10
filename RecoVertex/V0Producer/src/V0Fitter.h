@@ -23,6 +23,7 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/Common/interface/Ref.h"
+#include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
@@ -42,7 +43,7 @@ class dso_hidden V0Fitter {
    public:
       V0Fitter(const edm::ParameterSet& theParams, edm::ConsumesCollector && iC);
       void fitAll(const edm::Event& iEvent, const edm::EventSetup& iSetup,
-         reco::VertexCompositeCandidateCollection & k, reco::VertexCompositeCandidateCollection & l);
+		  reco::VertexCompositeCandidateCollection & k, std::vector<float> & dca_theKshorts, reco::VertexCompositeCandidateCollection & l, std::vector<float> & dca_lambdaCandidates,  std::vector<int> & iprotons );
 
    private:
 
@@ -52,9 +53,11 @@ class dso_hidden V0Fitter {
       bool doLambdas_;
 
       // cuts on initial track selection
+      std::string trackQualities_;
       double tkChi2Cut_;
       int tkNHitsCut_;
       double tkPtCut_;
+      double tkPtMax_;
       double tkIPSigXYCut_;
       double tkIPSigZCut_;
       // cuts on the vertex
@@ -72,9 +75,13 @@ class dso_hidden V0Fitter {
       double lambdaMassCut_;
 
       edm::EDGetTokenT<reco::TrackCollection> token_tracks;
+      edm::EDGetTokenT<std::vector<reco::Muon>> token_muons;
       edm::EDGetTokenT<reco::BeamSpot> token_beamSpot;
       bool useVertex_;
+      bool sameSign;
       edm::EDGetTokenT<std::vector<reco::Vertex>> token_vertices;
+
+      int protonidx = -1;
 };
 
 #endif
