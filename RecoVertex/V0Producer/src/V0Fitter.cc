@@ -102,7 +102,7 @@ void V0Fitter::fitAll(const edm::Event& iEvent, const edm::EventSetup& iSetup,
 
   edm::Handle<reco::TrackCollection> theTrackHandle;
   iEvent.getByToken(token_tracks, theTrackHandle);
-  
+  //if (iEvent.eventAuxiliary().event() != 43) return;
   if (debug) std::cout << "------------New event ------------------------------------" <<  std::endl;
   if (debug) std::cout << "Entering the Fitter track muon...for a event with tracks: " << theTrackHandle->size() << std::endl;
   if (debug) std::cout << "--------------------- ------------------------------------" <<  std::endl;
@@ -148,13 +148,13 @@ void V0Fitter::fitAll(const edm::Event& iEvent, const edm::EventSetup& iSetup,
     //if (itrack != 103 and itrack != 210) continue;
     //if (itrack != 94 and itrack != 95 and itrack != 51 and itrack != 1 and itrack != 0 and itrack != 2 and itrack != 125) continue;
     const reco::Track* tmpTrack = &(*iTk);
-    if (debug) std::cout << "Entering the track loop... for track " << itrack << " with pt " << tmpTrack->pt() << std::endl;
+    if (false) std::cout << "Entering the track loop... for track " << itrack << " with pt " << tmpTrack->pt() << std::endl;
     double ipsigXY = std::abs(tmpTrack->dxy(*theBeamSpot)/tmpTrack->dxyError());
-    if (debug) std::cout << " ipsigXY is good..." << itrack << std::endl;
+    if (false) std::cout << " ipsigXY is good..." << itrack << std::endl;
     if (useVertex_) ipsigXY = std::abs(tmpTrack->dxy(referencePos)/tmpTrack->dxyError()); // currently useVertex = false
     double ipsigZ = std::abs(tmpTrack->dz(referencePos)/tmpTrack->dzError());
-    if (debug) std::cout << " ipsigZ is good..." << itrack << std::endl;
-    if (debug) std::cout << " Checking: track Qual " << (tmpTrack->quality(tmpTrack->qualityByName(trackQualities_))) << 
+    if (false) std::cout << " ipsigZ is good..." << itrack << std::endl;
+    if (false) std::cout << " Checking: track Qual " << (tmpTrack->quality(tmpTrack->qualityByName(trackQualities_))) << 
     " trk Chi2 " << (tmpTrack->normalizedChi2() < tkChi2Cut_) << " trk Hits " << (tmpTrack->numberOfValidHits() >= tkNHitsCut_)<<
      " trk pt " << (tmpTrack->pt() > tkPtCut_) << " ipsigXY " << (ipsigXY > tkIPSigXYCut_) << " ipsigZ " << (ipsigZ > tkIPSigZCut_) << std::endl;
   
@@ -162,7 +162,7 @@ void V0Fitter::fitAll(const edm::Event& iEvent, const edm::EventSetup& iSetup,
 	tmpTrack->normalizedChi2() < tkChi2Cut_ &&
 	tmpTrack->numberOfValidHits() >= tkNHitsCut_ &&
 	tmpTrack->pt() > tkPtCut_ && tmpTrack->pt() < tkPtMax_ && ipsigXY > tkIPSigXYCut_ && ipsigZ > tkIPSigZCut_) {
-	  if (debug) std::cout << "pass preselection.." << itrack << std::endl;
+	  if (false) std::cout << "pass preselection.." << itrack << std::endl;
       reco::TrackRef tmpRef(theTrackHandle, std::distance(theTrackCollection->begin(), iTk));
       theTrackRefs.push_back(std::move(tmpRef));
       reco::TransientTrack tmpTransient(*tmpRef, theMagneticField);
@@ -182,15 +182,16 @@ void V0Fitter::fitAll(const edm::Event& iEvent, const edm::EventSetup& iSetup,
   if (debug) std::cout << "----------------Pairing of preselected tracks ----------------"<< std::endl;
   for (unsigned int trdx1 = 0; trdx1 < theTrackRefs.size(); ++trdx1) {
     //if ((trdx1 != 197)) continue;
-    if (debug) std::cout << "Take track " << trdx1 << std::endl;
+    if (false) std::cout << "Take track " << trdx1 << std::endl;
     for (unsigned int trdx2 = trdx1 + 1; trdx2 < theTrackRefs.size(); ++trdx2) {
-      //if ((trdx2 != 204)) continue;
+      //if ((trdx2 != 56)) continue;
       reco::TrackRef positiveTrackRef;
       reco::TrackRef negativeTrackRef;
       reco::TransientTrack* posTransTkPtr = nullptr;
       reco::TransientTrack* negTransTkPtr = nullptr;
-      if (debug) std::cout << "Pair it with track " << trdx2 <<  "has pt " << theTrackRefs[trdx2]->pt() << " and charge " << theTrackRefs[trdx2]->charge() << std::endl;
-      if (debug) std::cout << "have opposite charge " << ((theTrackRefs[trdx1]->charge() < 0. && theTrackRefs[trdx2]->charge() > 0.) or (theTrackRefs[trdx1]->charge() > 0. && theTrackRefs[trdx2]->charge() < 0.))<<  std::endl;
+      if (false) std::cout << "Take track " << trdx1 << std::endl;
+      if (false) std::cout << "Pair it with track " << trdx2 <<  "has pt " << theTrackRefs[trdx2]->pt() << " and charge " << theTrackRefs[trdx2]->charge() << std::endl;
+      if (false) std::cout << "have opposite charge " << ((theTrackRefs[trdx1]->charge() < 0. && theTrackRefs[trdx2]->charge() > 0.) or (theTrackRefs[trdx1]->charge() > 0. && theTrackRefs[trdx2]->charge() < 0.))<<  std::endl;
 	  if (sameSign){
 		if (theTrackRefs[trdx1]->charge() < 0. && theTrackRefs[trdx2]->charge() > 0.)  {
 			continue;
@@ -205,9 +206,8 @@ void V0Fitter::fitAll(const edm::Event& iEvent, const edm::EventSetup& iSetup,
 			negativeIdx = goodtrackindices.at(trdx2);
 		  }
 
-		if (debug) std::cout << "Setting the pos. and neg. TrackRef " << positiveTrackRef->charge() << " " << negativeTrackRef->charge()  << std::endl;
+		if (false) std::cout << "Setting the pos. and neg. TrackRef " << positiveTrackRef->charge() << " " << negativeTrackRef->charge()  << std::endl;
 	  }
-	 
 	  else{
 		  if (theTrackRefs[trdx1]->charge() < 0. && theTrackRefs[trdx2]->charge() > 0.) {
 		negativeTrackRef = theTrackRefs[trdx1];
@@ -241,27 +241,33 @@ void V0Fitter::fitAll(const edm::Event& iEvent, const edm::EventSetup& iSetup,
 	double_t dRmin2 = 9999;	
 	for( const auto& muon : *theMuonHandle){
 		TLorentzVector tlvmu;
+		if (false) std::cout << " in muon matching, muon has charge" << muon.charge() << std::endl;
 		if (muon.charge() == 0) continue;
-		if (muon.charge()*theTrackRefs[trdx1]->charge()>0) continue;
-		tlvmu.SetPxPyPzE(muon.px(), muon.py(),muon.pz(),muon.pt()*cosh(muon.eta()));
-		if (tlvmu.DeltaR(tlv1)<dRmin1){
-			dRmin1 = tlvmu.DeltaR(tlv1);
+		//if (muon.charge()*theTrackRefs[trdx1]->charge()>0) continue;
+		if (muon.charge()*theTrackRefs[trdx1]->charge()>0){
+			tlvmu.SetPxPyPzE(muon.px(), muon.py(),muon.pz(),muon.pt()*cosh(muon.eta()));
+			if (tlvmu.DeltaR(tlv1)<dRmin1){
+				dRmin1 = tlvmu.DeltaR(tlv1);
+			}
 		}
-		if (tlvmu.DeltaR(tlv2)<dRmin2){
-			dRmin2 = tlvmu.DeltaR(tlv2);
+		if (muon.charge()*theTrackRefs[trdx2]->charge()>0){
+			tlvmu.SetPxPyPzE(muon.px(), muon.py(),muon.pz(),muon.pt()*cosh(muon.eta()));
+			if (tlvmu.DeltaR(tlv2)<dRmin2){
+				dRmin2 = tlvmu.DeltaR(tlv2);
+			}
 		}
 	}
 
 	if  (((theTrackRefs[trdx1]->charge() < 0. && theTrackRefs[trdx2]->charge() < 0.)) or ((theTrackRefs[trdx1]->charge() > 0. && theTrackRefs[trdx2]->charge() > 0.))){
-		if (debug) std::cout << "hAVE SAME chARGE " << std::endl;
+		if (false) std::cout << "hAVE SAME chARGE " << std::endl;
 		//std::cout << "hAVE SAME chARGE " << trdx1 << std::endl;
 		//std::cout << "Pair it with track " << trdx2 <<  "has pt " << theTrackRefs[trdx2]->pt() << " and charge " << theTrackRefs[trdx2]->charge() << std::endl;
 		//std::cout << "muon matching drmin1 " << dRmin1 << " dRmin2 " << dRmin2 << std::endl;
 	}
-    if (debug) std::cout << "muon matching drmin1 " << dRmin1 << " dRmin2 " << dRmin2 << std::endl;
-    if ((!(dRmin1<0.01)) && (!(dRmin2<0.01))) continue;
-  	if (debug) std::cout << "Take track " << trdx1 <<  "has pt " << theTrackRefs[trdx2]->pt() << " and charge " << theTrackRefs[trdx2]->charge() << std::endl;
-	if (debug) std::cout << "Pair it with track " << trdx2 <<  "has pt " << theTrackRefs[trdx2]->pt() << " and charge " << theTrackRefs[trdx2]->charge() << std::endl;
+    if (false) std::cout << "muon matching drmin1 " << dRmin1 << " dRmin2 " << dRmin2 << std::endl;
+    if ((dRmin1>0.01) && (dRmin2>0.01)) continue;
+  	if (debug) std::cout << "Take track 1" << trdx1 <<  "has pt " << theTrackRefs[trdx1]->pt() << " and charge " << theTrackRefs[trdx1]->charge() << std::endl;
+	if (debug) std::cout << "Pair it with track 2 " << trdx2 <<  "has pt " << theTrackRefs[trdx2]->pt() << " and charge " << theTrackRefs[trdx2]->charge() << std::endl;
 	if (debug) std::cout << "muon matching drmin1 " << dRmin1 << " dRmin2 " << dRmin2 << std::endl;  
     
     
@@ -396,7 +402,7 @@ void V0Fitter::fitAll(const edm::Event& iEvent, const edm::EventSetup& iSetup,
 	  }
 	}
 	if(sameSign){
-		if (theRefTracks.size() > 2) continue;
+		//if (theRefTracks.size() > 2) continue;
 		for (std::vector<reco::TransientTrack>::iterator iTrack = theRefTracks.begin(); iTrack != theRefTracks.end(); ++iTrack) {
 			if (iTrack== theRefTracks.begin()){thePositiveRefTrack = &*iTrack;}
 			else {theNegativeRefTrack = &*iTrack;}
